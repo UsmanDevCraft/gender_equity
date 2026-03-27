@@ -1,6 +1,9 @@
 # 🌍 WeCoded 2026: Breaking Barriers Through Perspective
 
-A high-performance, interactive 3D web experience built for the **2026 WeCoded Gender Equity Challenge**. This project utilizes immersive technology to dismantle professional stereotypes, demonstrating that talent, intellect, and courage have no gender.
+A high-performance, interactive 3D web experience built for the **[2026 WeCoded Gender Equity Challenge](https://dev.to/challenges/wecoded-2026)**. This project utilizes immersive technology to dismantle professional stereotypes, demonstrating that talent, intellect, and courage have no gender.
+
+<img width="1680" height="814" alt="Screenshot 2026-03-27 at 6 19 27 PM" src="https://github.com/user-attachments/assets/fef4ef0e-610f-4132-be58-62468c59335e" />
+
 
 ## 🚀 The Vision
 
