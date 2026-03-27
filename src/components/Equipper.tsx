@@ -10,12 +10,12 @@ import {
   useTexture,
   useProgress,
   useAnimations,
+  Html,
 } from "@react-three/drei";
 import * as THREE from "three";
 import { SkeletonUtils } from "three-stdlib";
 import { motion } from "framer-motion";
 import {
-  ChevronLeft,
   RotateCcw,
   RotateCw,
   Maximize2,
@@ -23,17 +23,8 @@ import {
   Play,
   Pause,
 } from "lucide-react";
-import Link from "next/link";
 import { useSelector } from "react-redux";
 import { RootState } from "@/src/store/store";
-import GenderDropdown from "@/src/components/GenderDropdown";
-import Dropdown from "@/src/components/Dropdown";
-import {
-  DEFAULT_BODY_FEMALE,
-  DEFAULT_BODY_MALE,
-  DEFAULT_HEADS_FEMALE,
-  DEFAULT_HEADS_MALE,
-} from "@/src/constants/avatar_assets";
 
 // ──────────────────────────────────────────────
 //  ↓  Define only the props you actually need
@@ -98,12 +89,13 @@ function AvatarScene({
   glbAssets = {},
   preview = {},
   enableAnimation = true,
+  gender,
 }: {
   glbAssets: MinimalAvatarProps["glbAssets"];
   preview: MinimalAvatarProps["preview"];
   enableAnimation?: boolean;
+  gender: "male" | "female";
 }) {
-  const gender = useSelector((state: RootState) => state.equipper.gender);
   const customAssets = useSelector(
     (state: RootState) => state.equipper.customAssets,
   );
@@ -398,46 +390,33 @@ function AnimatedCombinedScene({
   return <primitive object={combinedScene} scale={1} castShadow />;
 }
 
-function LoadingOverlay() {
-  const { active, progress } = useProgress();
-  const [smoothProgress, setSmoothProgress] = useState(0);
-
-  useEffect(() => {
-    if (active) {
-      if (progress > smoothProgress) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setSmoothProgress(progress);
-      }
-    } else {
-      // Small delay before resetting to 0 to allow fade out
-      const timeout = setTimeout(() => {
-        setSmoothProgress(0);
-      }, 500);
-      return () => clearTimeout(timeout);
-    }
-  }, [progress, active, smoothProgress]);
-
+function AvatarLoader({
+  position = [0, 0, 0],
+  label = "Buffering Assets...",
+}: {
+  position?: [number, number, number];
+  label?: string;
+}) {
+  const { progress } = useProgress();
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: active ? 1 : 0 }}
-      transition={{ duration: 0.5 }}
-      style={{ pointerEvents: active ? "auto" : "none" }}
-      className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#030712]/80 backdrop-blur-md"
-    >
-      <div className="relative w-24 h-24 mb-6">
-        <div className="absolute inset-0 border-4 border-blue-500/20 rounded-full" />
-        <div className="absolute inset-0 border-4 border-transparent border-t-blue-500 rounded-full animate-spin" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-xs font-bold text-blue-500">
-            {Math.round(smoothProgress)}%
-          </span>
+    <group position={position}>
+      <Html center>
+        <div className="flex flex-col items-center justify-center p-4 pointer-events-none">
+          <div className="relative w-16 h-16 mb-4">
+            <div className="absolute inset-0 border-4 border-blue-500/20 rounded-full" />
+            <div className="absolute inset-0 border-4 border-transparent border-t-blue-500 rounded-full animate-spin" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-[10px] font-bold text-blue-500">
+                {Math.round(progress)}%
+              </span>
+            </div>
+          </div>
+          <p className="text-white/40 font-bold uppercase tracking-widest text-[10px] animate-pulse whitespace-nowrap">
+            {label}
+          </p>
         </div>
-      </div>
-      <p className="text-white/40 font-bold uppercase tracking-widest text-sm animate-pulse">
-        Buffering Assets...
-      </p>
-    </motion.div>
+      </Html>
+    </group>
   );
 }
 
@@ -453,72 +432,7 @@ export default function MinimalAvatar({
   const [rotationY, setRotationY] = useState(0);
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(true);
 
-  const gender = useSelector((state: RootState) => state.equipper.gender);
-  const [prevGender, setPrevGender] = useState(gender);
-
-  const [selectedHeadKey, setSelectedHeadKey] = useState(() => {
-    const defaults = DEFAULT_ASSETS(gender);
-    const headMap =
-      gender === "male" ? DEFAULT_HEADS_MALE : DEFAULT_HEADS_FEMALE;
-    return (
-      Object.keys(headMap).find(
-        (k) => headMap[k as keyof typeof headMap] === defaults.head,
-      ) || ""
-    );
-  });
-  const [selectedBodyKey, setSelectedBodyKey] = useState(() => {
-    const defaults = DEFAULT_ASSETS(gender);
-    const bodyMap = gender === "male" ? DEFAULT_BODY_MALE : DEFAULT_BODY_FEMALE;
-    return (
-      Object.keys(bodyMap).find(
-        (k) => bodyMap[k as keyof typeof bodyMap] === defaults.body,
-      ) || ""
-    );
-  });
-
-  const headOptions = useMemo(
-    () =>
-      Object.keys(
-        gender === "male" ? DEFAULT_HEADS_MALE : DEFAULT_HEADS_FEMALE,
-      ),
-    [gender],
-  );
-  const bodyOptions = useMemo(
-    () =>
-      Object.keys(gender === "male" ? DEFAULT_BODY_MALE : DEFAULT_BODY_FEMALE),
-    [gender],
-  );
-
-  // Sync defaults when gender changes during render
-  if (gender !== prevGender) {
-    setPrevGender(gender);
-    const defaults = DEFAULT_ASSETS(gender);
-    const headMap =
-      gender === "male" ? DEFAULT_HEADS_MALE : DEFAULT_HEADS_FEMALE;
-    const bodyMap = gender === "male" ? DEFAULT_BODY_MALE : DEFAULT_BODY_FEMALE;
-
-    const hKey = Object.keys(headMap).find(
-      (k) => headMap[k as keyof typeof headMap] === defaults.head,
-    );
-    const bKey = Object.keys(bodyMap).find(
-      (k) => bodyMap[k as keyof typeof bodyMap] === defaults.body,
-    );
-
-    setSelectedHeadKey(hKey || headOptions[0]);
-    setSelectedBodyKey(bKey || bodyOptions[0]);
-  }
-
-  const currentGlbAssets = useMemo(() => {
-    const headMap =
-      gender === "male" ? DEFAULT_HEADS_MALE : DEFAULT_HEADS_FEMALE;
-    const bodyMap = gender === "male" ? DEFAULT_BODY_MALE : DEFAULT_BODY_FEMALE;
-
-    return {
-      ...glbAssets,
-      head: headMap[selectedHeadKey as keyof typeof headMap] || glbAssets.head,
-      body: bodyMap[selectedBodyKey as keyof typeof bodyMap] || glbAssets.body,
-    };
-  }, [gender, selectedHeadKey, selectedBodyKey, glbAssets]);
+  // State for individual selection removed as both avatars compute defaults internally
 
   return (
     <div className="relative w-full h-screen flex bg-[#030712] overflow-hidden">
@@ -532,31 +446,10 @@ export default function MinimalAvatar({
         {/* Header */}
         <nav className="absolute top-0 left-0 right-0 z-30 px-8 py-8 flex justify-between items-center bg-gradient-to-b from-black/20 to-transparent">
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-          >
-            <Link href="/" className="group flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/10 transition-all">
-                <ChevronLeft className="w-5 h-5 text-white/50 group-hover:text-white" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-sm font-bold text-white/40 uppercase tracking-widest leading-none mb-1">
-                  Back to Home
-                </span>
-                <span className="text-lg font-bold text-white tracking-tight">
-                  Equipper Studio
-                </span>
-              </div>
-            </Link>
-          </motion.div>
-
-          <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center gap-4"
           >
-            <GenderDropdown />
-
             <div className="px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full flex items-center gap-2">
               <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
               <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">
@@ -573,32 +466,7 @@ export default function MinimalAvatar({
           transition={{ delay: 0.3 }}
           className="absolute top-32 right-8 z-30 flex flex-col gap-6 w-64 p-6 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-2xl"
         >
-          <div className="flex flex-col gap-3">
-            <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] px-1">
-              Head Selection
-            </label>
-            <Dropdown
-              options={headOptions}
-              value={selectedHeadKey}
-              onChange={setSelectedHeadKey}
-              placeholder="Select Head"
-            />
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] px-1">
-              Body Selection
-            </label>
-            <Dropdown
-              options={bodyOptions}
-              value={selectedBodyKey}
-              onChange={setSelectedBodyKey}
-              placeholder="Select Body"
-            />
-          </div>
-
-          <div className="w-full h-px bg-white/10 my-1" />
-
+          {/* <div className="w-full h-px bg-white/10 my-1" /> */}
           <div className="flex items-center justify-between px-1">
             <div className="flex flex-col">
               <span className="text-xs font-bold text-white tracking-wide">
@@ -683,7 +551,6 @@ export default function MinimalAvatar({
 
         {/* 3D Canvas */}
         <div className="absolute inset-0 z-10">
-          <LoadingOverlay />
           <Canvas
             shadows
             camera={{ position: [0, 1.8, 4.2], fov: 55 }}
@@ -702,10 +569,42 @@ export default function MinimalAvatar({
 
             <Environment preset="apartment" />
 
-            <Suspense fallback={null}>
-              <group rotation={[0, (rotationY * Math.PI) / 180, 0]}>
+            <Suspense
+              fallback={
+                <AvatarLoader
+                  position={[-0.4, 1.4, 0]}
+                  label="Loading Male..."
+                />
+              }
+            >
+              <group
+                position={[-0.4, 0, 0]}
+                rotation={[0, (rotationY * Math.PI) / 180, 0]}
+              >
                 <AvatarScene
-                  glbAssets={currentGlbAssets}
+                  gender="male"
+                  glbAssets={glbAssets}
+                  preview={preview}
+                  enableAnimation={isAnimationEnabled}
+                />
+              </group>
+            </Suspense>
+
+            <Suspense
+              fallback={
+                <AvatarLoader
+                  position={[0.4, 1.4, 0]}
+                  label="Loading Female..."
+                />
+              }
+            >
+              <group
+                position={[0.4, 0, 0]}
+                rotation={[0, (rotationY * Math.PI) / 180, 0]}
+              >
+                <AvatarScene
+                  gender="female"
+                  glbAssets={glbAssets}
                   preview={preview}
                   enableAnimation={isAnimationEnabled}
                 />
