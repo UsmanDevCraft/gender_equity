@@ -38,6 +38,8 @@ interface MinimalAvatarProps {
     shirt?: string;
     pants?: string;
     shoes?: string;
+    outfit?: string;
+    outfitType?: string;
     bodyColorTexture?: string;
     eyeColorTexture?: string;
   };
@@ -47,6 +49,8 @@ interface MinimalAvatarProps {
     shirt?: string;
     pants?: string;
     shoes?: string;
+    outfit?: string;
+    isCostume?: boolean;
     bodyColorTexture?: string;
     eyeColorTexture?: string;
     body?: string;
@@ -67,6 +71,10 @@ const DEFAULT_ASSETS = (gender: "male" | "female") => ({
       : "/Heads/MainHead_Female_v02.glb",
   hair: gender === "male" ? "/Hair/Hair.glb" : "/Hair/female_hair_76.glb",
   shirt: gender === "male" ? "/Top/Shirt.glb" : "/Top/top-tshirt-01-f.glb",
+  outfit:
+    gender === "male"
+      ? "/male_outfit_glbs/outfit-software-engineer-01-m.glb"
+      : "/female_outfit_glbs/outfit-software-engineer-f.glb",
   pants:
     gender === "male" ? "/Bottom/Pants.glb" : "/Bottom/pants-casual-01-f.glb",
   shoes:
@@ -112,6 +120,11 @@ function AvatarScene({
       preview?.pants || customAssets.pants || glbAssets.pants || defaults.pants,
     shoes:
       preview?.shoes || customAssets.shoes || glbAssets.shoes || defaults.shoes,
+    outfit:
+      preview?.outfit ||
+      customAssets.outfit ||
+      glbAssets.outfit ||
+      defaults.outfit,
     bodyColorTexture:
       preview?.bodyColorTexture ||
       glbAssets.bodyColorTexture ||
@@ -129,6 +142,7 @@ function AvatarScene({
   const hairGLTF = useGLTF(final.hair);
   const shirtGLTF = useGLTF(final.shirt);
   const pantsGLTF = useGLTF(final.pants);
+  const outfitGLTF = useGLTF(final.outfit);
   const shoesGLTF = useGLTF(final.shoes);
 
   // Load textures (unconditional → satisfies hooks rule)
@@ -189,6 +203,31 @@ function AvatarScene({
 
   // Combined scene (memoized → only rebuild when inputs change)
   const scene = useMemo(() => {
+    const isOutfit = true;
+    const isCostumeMode =
+      preview.isCostume || glbAssets.outfitType === "costume" || false;
+
+    if (isCostumeMode) {
+      const costumeScene = SkeletonUtils.clone(outfitGLTF.scene) as THREE.Group;
+
+      costumeScene.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          child.frustumCulled = false;
+        }
+        if (
+          child instanceof THREE.SkinnedMesh &&
+          /Head/i.test(child.name) &&
+          !/Eye/i.test(child.name)
+        ) {
+          child.material = Array.isArray(child.material)
+            ? child.material.map((m) => updateMaterial(m, child.name))
+            : updateMaterial(child.material, child.name);
+        }
+      });
+
+      return costumeScene;
+    }
+
     // Use body as base and apply material fix
     const combined = SkeletonUtils.clone(bodyGLTF.scene) as THREE.Group;
     combined.traverse((child) => {
@@ -324,9 +363,16 @@ function AvatarScene({
     // Add parts (body is already base, so start with head)
     addBodyPart(headGLTF.scene, "head");
     addBodyPart(hairGLTF.scene, "hair");
-    addBodyPart(shirtGLTF.scene, "shirt");
-    addBodyPart(pantsGLTF.scene, "pants");
-    addBodyPart(shoesGLTF.scene, "shoes");
+
+    if (!isOutfit) {
+      addBodyPart(shirtGLTF.scene, "shirt");
+      addBodyPart(shoesGLTF.scene, "shoes");
+      addBodyPart(pantsGLTF.scene, "pants");
+    }
+
+    if (isOutfit) {
+      addBodyPart(outfitGLTF.scene, "outfit");
+    }
 
     return combined;
   }, [
@@ -336,7 +382,10 @@ function AvatarScene({
     shirtGLTF,
     pantsGLTF,
     shoesGLTF,
+    outfitGLTF,
     updateMaterial,
+    preview.isCostume,
+    glbAssets.outfitType,
   ]);
 
   return (
@@ -579,7 +628,7 @@ export default function MinimalAvatar({
             >
               <group
                 position={[-0.4, 0, 0]}
-                rotation={[0, (rotationY * Math.PI) / 180, 0]}
+                rotation={[0, ((rotationY + 15) * Math.PI) / 180, 0]}
               >
                 <AvatarScene
                   gender="male"
@@ -600,7 +649,7 @@ export default function MinimalAvatar({
             >
               <group
                 position={[0.4, 0, 0]}
-                rotation={[0, (rotationY * Math.PI) / 180, 0]}
+                rotation={[0, ((rotationY - 15) * Math.PI) / 180, 0]}
               >
                 <AvatarScene
                   gender="female"
@@ -617,6 +666,7 @@ export default function MinimalAvatar({
               enableRotate={true}
               minPolarAngle={Math.PI / 2.5}
               maxPolarAngle={Math.PI / 1.8}
+              target={[0, 1.2, 0]}
               makeDefault
             />
 

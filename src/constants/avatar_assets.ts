@@ -10,3 +10,9 @@ export const DEFAULT_BODY_MALE: Record<string, string> = {
 export const DEFAULT_BODY_FEMALE: Record<string, string> = {
   default: "/Body-Variants/Female/Female_Body_v06.glb",
 };
+export const DEFAULT_OUTFIT_MALE: Record<string, string> = {
+  default: "/male_outfit_glbs/outfit-software-engineer-01-m.glb",
+};
+export const DEFAULT_OUTFIT_FEMALE: Record<string, string> = {
+  default: "/female_outfit_glbs/outfit-software-engineer-f.glb",
+};

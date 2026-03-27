@@ -7,6 +7,7 @@ interface EquipperState {
     shirt: string | null;
     pants: string | null;
     shoes: string | null;
+    outfit: string | null;
   };
 }
 
@@ -17,6 +18,7 @@ const initialState: EquipperState = {
     shirt: null,
     pants: null,
     shoes: null,
+    outfit: null,
   },
 };
 
