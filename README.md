@@ -11,6 +11,8 @@ The "Gender Equity" project is an interactive gallery of 10 essential profession
 
 Each profession features a detailed narrative and historical icons (both male and female) who pioneered their respective fields, bridging the gap between historical legacy and future potential.
 
+https://github.com/user-attachments/assets/6ad80068-2d3a-4d56-88ed-a39b41b56537
+
 ---
 
 ## 🛠️ Tech Stack
