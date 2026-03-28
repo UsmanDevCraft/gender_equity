@@ -206,7 +206,7 @@ function AvatarScene({
 
   // Combined scene (memoized → only rebuild when inputs change)
   const scene = useMemo(() => {
-    const isOutfit = true;
+    const isOutfit = !!(final.outfit && final.outfit !== "");
     const isCostumeMode =
       preview.isCostume || glbAssets.outfitType === "costume" || false;
 
@@ -239,6 +239,10 @@ function AvatarScene({
           ? child.material.map((m) => updateMaterial(m, child.name))
           : updateMaterial(child.material, child.name);
         child.frustumCulled = false;
+
+        if (isOutfit) {
+          child.visible = false;
+        }
       }
     });
 
@@ -389,6 +393,7 @@ function AvatarScene({
     updateMaterial,
     preview.isCostume,
     glbAssets.outfitType,
+    final.outfit,
   ]);
 
   return (
