@@ -22,9 +22,12 @@ import {
   Minimize2,
   Play,
   Pause,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/src/store/store";
+import { OUTFITS_MALE, OUTFITS_FEMALE } from "@/src/constants/avatar_assets";
 
 // ──────────────────────────────────────────────
 //  ↓  Define only the props you actually need
@@ -480,6 +483,15 @@ export default function MinimalAvatar({
   const [isZoomed, setIsZoomed] = useState(false);
   const [rotationY, setRotationY] = useState(0);
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(true);
+  const [outfitIndex, setOutfitIndex] = useState(1);
+
+  const handleNextOutfit = () => {
+    setOutfitIndex((prev) => (prev === 10 ? 1 : prev + 1));
+  };
+
+  const handlePrevOutfit = () => {
+    setOutfitIndex((prev) => (prev === 1 ? 10 : prev - 1));
+  };
 
   // State for individual selection removed as both avatars compute defaults internally
 
@@ -598,6 +610,24 @@ export default function MinimalAvatar({
           </motion.div>
         </div>
 
+        {/* Outfit Navigation Arrows */}
+        <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 z-30 pointer-events-none flex justify-center">
+          <div className="w-full max-w-[700px] flex justify-between px-8">
+            <button
+              onClick={handlePrevOutfit}
+              className="pointer-events-auto p-4 bg-white/5 backdrop-blur-xl border border-white/20 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:bg-white/10 hover:scale-110 hover:shadow-[0_8px_32px_rgba(255,255,255,0.1)] transition-all text-white/70 hover:text-white"
+            >
+              <ChevronLeft className="w-8 h-8" />
+            </button>
+            <button
+              onClick={handleNextOutfit}
+              className="pointer-events-auto p-4 bg-white/5 backdrop-blur-xl border border-white/20 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:bg-white/10 hover:scale-110 hover:shadow-[0_8px_32px_rgba(255,255,255,0.1)] transition-all text-white/70 hover:text-white"
+            >
+              <ChevronRight className="w-8 h-8" />
+            </button>
+          </div>
+        </div>
+
         {/* 3D Canvas */}
         <div className="absolute inset-0 z-10">
           <Canvas
@@ -633,7 +663,10 @@ export default function MinimalAvatar({
                 <AvatarScene
                   gender="male"
                   glbAssets={glbAssets}
-                  preview={preview}
+                  preview={{
+                    ...preview,
+                    outfit: OUTFITS_MALE[`outfit${outfitIndex}`],
+                  }}
                   enableAnimation={isAnimationEnabled}
                 />
               </group>
@@ -654,7 +687,10 @@ export default function MinimalAvatar({
                 <AvatarScene
                   gender="female"
                   glbAssets={glbAssets}
-                  preview={preview}
+                  preview={{
+                    ...preview,
+                    outfit: OUTFITS_FEMALE[`outfit${outfitIndex}`],
+                  }}
                   enableAnimation={isAnimationEnabled}
                 />
               </group>
