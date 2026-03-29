@@ -35,6 +35,7 @@ import {
 import { useSelector } from "react-redux";
 import { RootState } from "@/src/store/store";
 import { OUTFITS_MALE, OUTFITS_FEMALE } from "@/src/constants/avatar_assets";
+import MetaDataModal from "./MetaDataModal";
 
 /** Morph target names used for blink (Wolf3D/RPM style); only applied if present on the head mesh */
 const BLINK_MORPH_NAMES = ["eyeBlinkLeft", "eyeBlinkRight"] as const;
@@ -626,6 +627,8 @@ export default function MinimalAvatar({
             </div>
           </motion.div>
         </nav>
+
+        <MetaDataModal outfitIndex={outfitIndex} />
 
         {/* Right Selection Panel */}
         <motion.div

@@ -1,0 +1,92 @@
+[
+  {
+    "id": "outfit-journalist",
+    "title": "Journalist",
+    "description": "A fearless seeker of truth who investigates complex issues and amplifies the voices of the unheard. This profession requires a sharp analytical mind and the integrity to report objectively, proving that the power of the pen is driven by perspective and courage rather than gender. It is about shaping the public narrative through dedication and factual accuracy.",
+    "examples": {
+      "male": "James Baldwin (Breaking barriers through social commentary and literature)",
+      "female": "Nellie Bly (Pioneer of investigative journalism who traveled the world in 72 days)"
+    }
+  },
+  {
+    "id": "outfit-farmer",
+    "title": "Farmer",
+    "description": "The essential provider for global food security, mastering the science of soil, climate, and crop management. This role honors the immense physical resilience and strategic planning required to cultivate the land and sustain communities. It highlights that the strength to feed the world is a universal human trait defined by hard work and deep environmental knowledge.",
+    "examples": {
+      "male": "George Washington Carver (Revolutionized agricultural science and crop rotation)",
+      "female": "Karen Washington (Prominent urban farmer and advocate for food justice)"
+    }
+  },
+  {
+    "id": "outfit-firefighter",
+    "title": "Firefighter",
+    "description": "A symbol of bravery and rapid response, dedicated to protecting lives and property during emergencies. This profession celebrates the physical strength, technical rescue skills, and calm under pressure needed to serve the community. It reinforces the idea that heroism is a choice made by anyone willing to step into danger for the safety of others.",
+    "examples": {
+      "male": "Patrick Hardison (Symbol of resilience and recovery in the firefighting community)",
+      "female": "Molly Williams (The first known female firefighter in the US, serving in 1818)"
+    }
+  },
+  {
+    "id": "outfit-software",
+    "title": "Software Engineer",
+    "description": "An architect of the digital infrastructure that powers the modern world. This role focuses on logical problem-solving, algorithmic thinking, and creative innovation. By highlighting that the ability to build the future through code resides in the intellect, this profession dismantles stereotypes and invites all minds to participate in the tech revolution.",
+    "examples": {
+      "male": "Alan Turing (The father of theoretical computer science and AI)",
+      "female": "Ada Lovelace (The world’s first computer programmer)"
+    }
+  },
+  {
+    "id": "outfit-mechanic",
+    "title": "Mechanic",
+    "description": "A specialist in complex mechanical systems and precision engineering. This role requires technical mastery, manual dexterity, and an expert understanding of how things work. It showcases that the capability to diagnose, repair, and innovate within the world of machinery is a skill set earned through training and talent, accessible to everyone.",
+    "examples": {
+      "male": "Henry Ford (Revolutionary figure in automotive engineering)",
+      "female": "Patrice Banks (Founder of Girls Auto Clinic and advocate for women in trades)"
+    }
+  },
+  {
+    "id": "outfit-nurse",
+    "title": "Nurse",
+    "description": "A highly skilled clinical expert who balances advanced medical knowledge with critical patient advocacy. This profession is the heartbeat of healthcare, requiring quick decision-making and specialized technical care. It highlights that the capacity for professional caregiving and clinical excellence is a vital contribution to society from all individuals.",
+    "examples": {
+      "male": "James Derham (The first African American to practice medicine/nursing in the US)",
+      "female": "Florence Nightingale (The founder of modern nursing)"
+    }
+  },
+  {
+    "id": "outfit-pilot",
+    "title": "Pilot",
+    "description": "A leader in the aviation industry defined by technical precision and the ability to navigate the skies under immense responsibility. This role represents the heights of professional achievement and mastery of complex flight systems. It serves as a reminder that the ambition to soar is a human desire that transcends traditional social boundaries.",
+    "examples": {
+      "male": "Charles Lindbergh (Pioneer of solo transatlantic flight)",
+      "female": "Amelia Earhart (The first female aviator to fly solo across the Atlantic)"
+    }
+  },
+  {
+    "id": "outfit-police",
+    "title": "Police Officer",
+    "description": "A dedicated guardian of public safety, focused on de-escalation, justice, and community service. This profession requires a balance of physical readiness, legal knowledge, and high emotional intelligence. It emphasizes that the strength to serve and protect a diverse community equitably is found in integrity and a commitment to human rights.",
+    "examples": {
+      "male": "August Vollmer (A leading figure in the development of modern policing)",
+      "female": "Alice Stebbins Wells (The first American-born female police officer)"
+    }
+  },
+  {
+    "id": "outfit-retailsalesperson",
+    "title": "Retail Salesperson",
+    "description": "An expert in interpersonal communication and business operations who drives the global economy. This role highlights the essential skills of negotiation, product knowledge, and customer psychology. It demonstrates that success in commerce and the ability to build lasting community connections are traits shared by all professional entrepreneurs.",
+    "examples": {
+      "male": "Marshall Field (Founder of Marshall Field and Company and retail pioneer)",
+      "female": "Madam C.J. Walker (First female self-made millionaire through retail and entrepreneurship)"
+    }
+  },
+  {
+    "id": "outfit-doctor",
+    "title": "Doctor",
+    "description": "A leader in medical science and the complex art of healing. This role requires years of rigorous academic training, analytical research, and a deep dedication to saving lives. It reinforces that excellence in medicine and the pursuit of scientific breakthrough are merit-based achievements that belong to anyone with the passion to heal.",
+    "examples": {
+      "male": "Dr. Jonas Salk (Medical researcher who developed the polio vaccine)",
+      "female": "Dr. Elizabeth Blackwell (The first woman to receive a medical degree in the US)"
+    }
+  }
+]
