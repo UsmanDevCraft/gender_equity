@@ -58,6 +58,7 @@ interface MinimalAvatarProps {
     outfitType?: string;
     bodyColorTexture?: string;
     eyeColorTexture?: string;
+    hairColor?: string;
   };
   // Optional overrides / preview values (like your apparelPreview)
   preview?: {
@@ -70,6 +71,7 @@ interface MinimalAvatarProps {
     bodyColorTexture?: string;
     eyeColorTexture?: string;
     body?: string;
+    hairColor?: string;
   };
   showControls?: boolean;
   backgroundColor?: string;
@@ -86,6 +88,7 @@ const DEFAULT_ASSETS = (gender: "male" | "female") => ({
       ? "/Heads/MainHead_Mesh.glb"
       : "/Heads/MainHead_Female_v02.glb",
   hair: gender === "male" ? "/Hair/Hair.glb" : "/Hair/female_hair_76.glb",
+  hairColor: "#000000",
   shirt: gender === "male" ? "/Top/Shirt.glb" : "/Top/top-tshirt-01-f.glb",
   outfit:
     gender === "male"
@@ -149,6 +152,7 @@ function AvatarScene({
       preview?.eyeColorTexture ||
       glbAssets.eyeColorTexture ||
       defaults.eyeColorTexture,
+    hairColor: preview?.hairColor || glbAssets.hairColor || defaults.hairColor,
     animation: defaults.animation,
   };
 
@@ -274,10 +278,6 @@ function AvatarScene({
       bonesByName["mixamorigHead"] ||
       Object.values(bonesByName).find((b) => /head/i.test(b.name));
 
-    if (!headBone) {
-      console.warn("Head bone not found – some parts may not attach properly");
-    }
-
     const addBodyPart = (gltfScene: THREE.Group, partName: string) => {
       gltfScene.traverse((child) => {
         let resolvedPartName = partName;
@@ -313,6 +313,26 @@ function AvatarScene({
           clonedMesh.material = Array.isArray(clonedMesh.material)
             ? clonedMesh.material.map((m) => updateMaterial(m, child.name))
             : updateMaterial(clonedMesh.material, child.name);
+
+          if (resolvedPartName === "hair" && clonedMesh.material) {
+            const applyHairColor = (mat: THREE.Material) => {
+              if (!(mat instanceof THREE.MeshStandardMaterial)) return mat;
+
+              const material = mat.clone();
+              material.map = null;
+              material.vertexColors = false;
+              material.color = new THREE.Color(final.hairColor);
+              material.color.convertSRGBToLinear();
+              material.needsUpdate = true;
+              return material;
+            };
+
+            if (Array.isArray(clonedMesh.material)) {
+              clonedMesh.material = clonedMesh.material.map(applyHairColor);
+            } else {
+              clonedMesh.material = applyHairColor(clonedMesh.material);
+            }
+          }
 
           const isSkinned = child instanceof THREE.SkinnedMesh;
 
@@ -359,10 +379,6 @@ function AvatarScene({
                 combined.add(skinnedClone);
               }
               return;
-            } else {
-              console.warn(
-                `Bone mismatch for ${resolvedPartName} (${child.name}), adding as static`,
-              );
             }
           }
 
@@ -407,6 +423,7 @@ function AvatarScene({
     preview.isCostume,
     glbAssets.outfitType,
     final.outfit,
+    final.hairColor,
   ]);
 
   return (
