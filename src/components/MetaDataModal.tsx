@@ -4,10 +4,7 @@ import { useState } from "react";
 import { Info, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import metaData from "../json/meta_data.json";
-
-interface MetaDataModalProps {
-  outfitIndex: number;
-}
+import type { MetaDataModalProps } from "@/src/types";
 
 const MetaDataModal = ({ outfitIndex }: MetaDataModalProps) => {
   const [isOpen, setIsOpen] = useState(true);

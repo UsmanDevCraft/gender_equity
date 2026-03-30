@@ -35,8 +35,10 @@ import {
   OUTFITS_MALE,
   OUTFITS_FEMALE,
   BACKGROUND_IMAGES,
+  DEFAULT_ASSETS,
 } from "@/src/constants/avatar_assets";
 import MetaDataModal from "./MetaDataModal";
+import type { MinimalAvatarProps } from "@/src/types";
 
 /** Morph target names used for blink (Wolf3D/RPM style); only applied if present on the head mesh */
 const BLINK_MORPH_NAMES = ["eyeBlinkLeft", "eyeBlinkRight"] as const;
@@ -44,76 +46,6 @@ const BLINK_DURATION = 0.15;
 const BLINK_INTERVAL_MIN = 2;
 const BLINK_INTERVAL_MAX = 4;
 
-// ──────────────────────────────────────────────
-//  ↓  Define only the props you actually need
-// ──────────────────────────────────────────────
-interface MinimalAvatarProps {
-  gender?: "male" | "female"; // required to pick defaults
-  glbAssets?: {
-    body?: string;
-    head?: string;
-    hair?: string;
-    shirt?: string;
-    pants?: string;
-    shoes?: string;
-    outfit?: string;
-    outfitType?: string;
-    bodyColorTexture?: string;
-    eyeColorTexture?: string;
-    hairColor?: string;
-  };
-  // Optional overrides / preview values (like your apparelPreview)
-  preview?: {
-    hair?: string;
-    shirt?: string;
-    pants?: string;
-    shoes?: string;
-    outfit?: string;
-    isCostume?: boolean;
-    bodyColorTexture?: string;
-    eyeColorTexture?: string;
-    body?: string;
-    hairColor?: string;
-  };
-  showControls?: boolean;
-  backgroundColor?: string;
-}
-
-// Default asset paths (adjust to your folder structure)
-const DEFAULT_ASSETS = (gender: "male" | "female") => ({
-  body:
-    gender === "male"
-      ? "/Body-Variants/Male/Male_Body_v04.glb"
-      : "/Body-Variants/Female/Female_Body_v06.glb",
-  head:
-    gender === "male"
-      ? "/Heads/MainHead_Mesh.glb"
-      : "/Heads/MainHead_Female_v02.glb",
-  hair: gender === "male" ? "/Hair/Hair.glb" : "/Hair/female_hair_76.glb",
-  hairColor: "#000000",
-  shirt: gender === "male" ? "/Top/Shirt.glb" : "/Top/top-tshirt-01-f.glb",
-  outfit:
-    gender === "male"
-      ? "/male_outfit_glbs/outfit-software-engineer-01-m.glb"
-      : "/female_outfit_glbs/outfit-software-engineer-f.glb",
-  pants:
-    gender === "male" ? "/Bottom/Pants.glb" : "/Bottom/pants-casual-01-f.glb",
-  shoes:
-    gender === "male"
-      ? "/Footwear/Shoes.glb"
-      : "/Footwear/tennis-casual-01-grey-f.glb",
-  bodyColorTexture: "/Skin-Color/7.png",
-  eyeColorTexture:
-    "https://simmingai.s3.us-east-1.amazonaws.com/simmingAssets/17633719094171700634379-1622793664-eye-04-mask-1699880622457-1700634386564.png",
-  animation:
-    gender === "male"
-      ? "/Animations/M_Standing_Idle_001.glb"
-      : "/Animations/F_Standing_Idle_001.glb",
-});
-
-// ──────────────────────────────────────────────
-//  Core rebinding + coloring logic
-// ──────────────────────────────────────────────
 function AvatarScene({
   glbAssets = {},
   preview = {},
