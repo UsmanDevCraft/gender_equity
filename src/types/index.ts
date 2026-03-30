@@ -1,5 +1,6 @@
 export interface MetaDataModalProps {
   outfitIndex: number;
+  isSmallScreen?: boolean;
 }
 
 export interface MinimalAvatarProps {

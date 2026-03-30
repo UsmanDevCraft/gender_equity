@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas } from "@react-three/fiber";
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import { Environment, OrbitControls } from "@react-three/drei";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -29,6 +29,25 @@ export default function MinimalAvatar({
   const [isZoomed, setIsZoomed] = useState(false);
   const [rotationY, setRotationY] = useState(0);
   const [outfitIndex, setOutfitIndex] = useState(1);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      setIsSmallScreen(width < 1500);
+      if (width < 1500) {
+        const newScale = Math.max(0.6, width / 1500);
+        setScale(newScale);
+      } else {
+        setScale(1);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleNextOutfit = () => {
     setOutfitIndex((prev) => (prev === 10 ? 1 : prev + 1));
@@ -78,7 +97,10 @@ export default function MinimalAvatar({
           </motion.div>
         </nav>
 
-        <MetaDataModal outfitIndex={outfitIndex} />
+        <MetaDataModal
+          outfitIndex={outfitIndex}
+          isSmallScreen={isSmallScreen}
+        />
 
         {/* Camera Controls Panel */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-4">
@@ -135,7 +157,7 @@ export default function MinimalAvatar({
         </div>
 
         {/* Glassmorphism block encapsulating canvas & arrows */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50vw] h-[70vh] bg-white/5 backdrop-blur-xl border border-white/10 rounded-[3rem] shadow-2xl z-20 pointer-events-auto overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] md:w-[80vw] xl:w-[60vw] 2xl:w-[50vw] h-[60vh] md:h-[65vh] 2xl:h-[70vh] bg-white/5 backdrop-blur-xl border border-white/10 rounded-[3rem] shadow-2xl z-20 pointer-events-auto overflow-hidden">
           {/* Inner Glow offset */}
           <div className="absolute inset-0 rounded-[3rem] shadow-[inset_0_0_100px_rgba(255,255,255,0.05)] pointer-events-none z-30" />
 
@@ -185,8 +207,9 @@ export default function MinimalAvatar({
                 }
               >
                 <group
-                  position={[-0.6, 0, 0]}
+                  position={[-0.6 * scale, 0, 0]}
                   rotation={[0, ((rotationY + 15) * Math.PI) / 180, 0]}
+                  scale={scale}
                 >
                   <AvatarScene
                     gender="male"
@@ -208,8 +231,9 @@ export default function MinimalAvatar({
                 }
               >
                 <group
-                  position={[0.6, 0, 0]}
+                  position={[0.6 * scale, 0, 0]}
                   rotation={[0, ((rotationY - 15) * Math.PI) / 180, 0]}
+                  scale={scale}
                 >
                   <AvatarScene
                     gender="female"

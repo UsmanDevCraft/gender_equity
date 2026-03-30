@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import { Info, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 import metaData from "../json/meta_data.json";
 import type { MetaDataModalProps } from "@/src/types";
 
-const MetaDataModal = ({ outfitIndex }: MetaDataModalProps) => {
+const MetaDataModal = ({ outfitIndex, isSmallScreen }: MetaDataModalProps) => {
   const [isOpen, setIsOpen] = useState(true);
+
+  const isModalVisible = isOpen && !isSmallScreen;
 
   const data = metaData[outfitIndex - 1];
 
@@ -16,7 +18,7 @@ const MetaDataModal = ({ outfitIndex }: MetaDataModalProps) => {
   return (
     <div className="absolute top-32 left-8 z-30 flex flex-col items-start pointer-events-none">
       <AnimatePresence mode="wait">
-        {isOpen ? (
+        {isModalVisible ? (
           <motion.div
             key="modal"
             initial={{ opacity: 0, x: -20 }}
