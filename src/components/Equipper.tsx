@@ -11,7 +11,6 @@ import {
 } from "react";
 import {
   Environment,
-  Grid,
   OrbitControls,
   useGLTF,
   useTexture,
@@ -21,20 +20,22 @@ import {
 } from "@react-three/drei";
 import * as THREE from "three";
 import { SkeletonUtils } from "three-stdlib";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   RotateCcw,
   RotateCw,
   Maximize2,
   Minimize2,
-  Play,
-  Pause,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/src/store/store";
-import { OUTFITS_MALE, OUTFITS_FEMALE } from "@/src/constants/avatar_assets";
+import {
+  OUTFITS_MALE,
+  OUTFITS_FEMALE,
+  BACKGROUND_IMAGES,
+} from "@/src/constants/avatar_assets";
 import MetaDataModal from "./MetaDataModal";
 
 /** Morph target names used for blink (Wolf3D/RPM style); only applied if present on the head mesh */
@@ -586,11 +587,9 @@ function AvatarLoader({
 export default function MinimalAvatar({
   glbAssets = {},
   preview = {},
-  backgroundColor = "#030712",
 }: MinimalAvatarProps) {
   const [isZoomed, setIsZoomed] = useState(false);
   const [rotationY, setRotationY] = useState(0);
-  const [isAnimationEnabled, setIsAnimationEnabled] = useState(true);
   const [outfitIndex, setOutfitIndex] = useState(1);
 
   const handleNextOutfit = () => {
@@ -603,8 +602,23 @@ export default function MinimalAvatar({
 
   // State for individual selection removed as both avatars compute defaults internally
 
+  const currentBgImage =
+    BACKGROUND_IMAGES[`bg${outfitIndex}`] || BACKGROUND_IMAGES.bg1;
+
   return (
     <div className="relative w-full h-screen flex bg-[#030712] overflow-hidden">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentBgImage}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.8 }}
+          className="absolute inset-0 bg-cover bg-center brightness-[0.4]"
+          style={{ backgroundImage: `url(${currentBgImage})` }}
+        />
+      </AnimatePresence>
+
       {/* Sidebar */}
 
       <div className="relative flex-1 h-full">
@@ -629,42 +643,6 @@ export default function MinimalAvatar({
         </nav>
 
         <MetaDataModal outfitIndex={outfitIndex} />
-
-        {/* Right Selection Panel */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
-          className="absolute top-32 right-8 z-30 flex flex-col gap-6 w-64 p-6 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-2xl"
-        >
-          {/* <div className="w-full h-px bg-white/10 my-1" /> */}
-          <div className="flex items-center justify-between px-1">
-            <div className="flex flex-col">
-              <span className="text-xs font-bold text-white tracking-wide">
-                Animations
-              </span>
-              <span className="text-[10px] text-white/30">Idle movement</span>
-            </div>
-            <button
-              onClick={() => setIsAnimationEnabled(!isAnimationEnabled)}
-              className={`w-12 h-6 rounded-full transition-all relative ${
-                isAnimationEnabled ? "bg-blue-500" : "bg-white/10"
-              }`}
-            >
-              <motion.div
-                animate={{ x: isAnimationEnabled ? 26 : 4 }}
-                transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                className="absolute top-1 w-4 h-4 bg-white rounded-full shadow-lg flex items-center justify-center"
-              >
-                {isAnimationEnabled ? (
-                  <Play className="w-2 h-2 text-blue-500 fill-current" />
-                ) : (
-                  <Pause className="w-2 h-2 text-white/40 fill-current" />
-                )}
-              </motion.div>
-            </button>
-          </div>
-        </motion.div>
 
         {/* Camera Controls Panel */}
         <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-30 flex items-center gap-4">
@@ -720,117 +698,105 @@ export default function MinimalAvatar({
           </motion.div>
         </div>
 
-        {/* Outfit Navigation Arrows */}
-        <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 z-30 pointer-events-none flex justify-center">
-          <div className="w-full max-w-[700px] flex justify-between px-8">
-            <button
-              onClick={handlePrevOutfit}
-              className="pointer-events-auto p-4 bg-white/5 backdrop-blur-xl border border-white/20 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:bg-white/10 hover:scale-110 hover:shadow-[0_8px_32px_rgba(255,255,255,0.1)] transition-all text-white/70 hover:text-white"
-            >
-              <ChevronLeft className="w-8 h-8" />
-            </button>
-            <button
-              onClick={handleNextOutfit}
-              className="pointer-events-auto p-4 bg-white/5 backdrop-blur-xl border border-white/20 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:bg-white/10 hover:scale-110 hover:shadow-[0_8px_32px_rgba(255,255,255,0.1)] transition-all text-white/70 hover:text-white"
-            >
-              <ChevronRight className="w-8 h-8" />
-            </button>
+        {/* Glassmorphism block encapsulating canvas & arrows */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] h-[80vh] bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[3rem] shadow-2xl z-20 pointer-events-auto overflow-hidden">
+          {/* Inner Glow offset */}
+          <div className="absolute inset-0 rounded-[3rem] shadow-[inset_0_0_100px_rgba(255,255,255,0.05)] pointer-events-none z-30" />
+
+          {/* Outfit Navigation Arrows */}
+          <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 z-30 pointer-events-none flex justify-center">
+            <div className="w-full max-w-[700px] flex justify-between px-8">
+              <button
+                onClick={handlePrevOutfit}
+                className="pointer-events-auto p-4 bg-white/5 backdrop-blur-xl border border-white/20 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:bg-white/10 hover:scale-110 hover:shadow-[0_8px_32px_rgba(255,255,255,0.1)] transition-all text-white/70 hover:text-white"
+              >
+                <ChevronLeft className="w-8 h-8" />
+              </button>
+              <button
+                onClick={handleNextOutfit}
+                className="pointer-events-auto p-4 bg-white/5 backdrop-blur-xl border border-white/20 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:bg-white/10 hover:scale-110 hover:shadow-[0_8px_32px_rgba(255,255,255,0.1)] transition-all text-white/70 hover:text-white"
+              >
+                <ChevronRight className="w-8 h-8" />
+              </button>
+            </div>
           </div>
-        </div>
 
-        {/* 3D Canvas */}
-        <div className="absolute inset-0 z-10">
-          <Canvas
-            shadows
-            camera={{ position: [0, 1.8, 4.2], fov: 55 }}
-            gl={{ antialias: true, alpha: false, preserveDrawingBuffer: true }}
-          >
-            <color attach="background" args={[backgroundColor]} />
-            <ambientLight intensity={0.6} />
-            <spotLight
-              position={[10, 10, 10]}
-              angle={0.15}
-              penumbra={1}
-              intensity={1.5}
-              castShadow
-            />
-            <directionalLight position={[-5, 5, -5]} intensity={0.5} />
-
-            <Environment preset="apartment" />
-
-            <Suspense
-              fallback={
-                <AvatarLoader
-                  position={[-0.4, 1.4, 0]}
-                  label="Loading Male..."
-                />
-              }
+          {/* 3D Canvas */}
+          <div className="absolute inset-0 z-10">
+            <Canvas
+              shadows
+              camera={{ position: [0, 1.8, 4.2], fov: 55 }}
+              gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}
             >
-              <group
-                position={[-0.4, 0, 0]}
-                rotation={[0, ((rotationY + 15) * Math.PI) / 180, 0]}
+              <ambientLight intensity={0.6} />
+              <spotLight
+                position={[10, 10, 10]}
+                angle={0.15}
+                penumbra={1}
+                intensity={1.5}
+                castShadow
+              />
+              <directionalLight position={[-5, 5, -5]} intensity={0.5} />
+
+              <Environment preset="apartment" />
+
+              <Suspense
+                fallback={
+                  <AvatarLoader
+                    position={[-0.4, 1.4, 0]}
+                    label="Loading Male..."
+                  />
+                }
               >
-                <AvatarScene
-                  gender="male"
-                  glbAssets={glbAssets}
-                  preview={{
-                    ...preview,
-                    outfit: OUTFITS_MALE[`outfit${outfitIndex}`],
-                  }}
-                  enableAnimation={isAnimationEnabled}
-                />
-              </group>
-            </Suspense>
+                <group
+                  position={[-0.4, 0, 0]}
+                  rotation={[0, ((rotationY + 15) * Math.PI) / 180, 0]}
+                >
+                  <AvatarScene
+                    gender="male"
+                    glbAssets={glbAssets}
+                    preview={{
+                      ...preview,
+                      outfit: OUTFITS_MALE[`outfit${outfitIndex}`],
+                    }}
+                  />
+                </group>
+              </Suspense>
 
-            <Suspense
-              fallback={
-                <AvatarLoader
-                  position={[0.4, 1.4, 0]}
-                  label="Loading Female..."
-                />
-              }
-            >
-              <group
-                position={[0.4, 0, 0]}
-                rotation={[0, ((rotationY - 15) * Math.PI) / 180, 0]}
+              <Suspense
+                fallback={
+                  <AvatarLoader
+                    position={[0.4, 1.4, 0]}
+                    label="Loading Female..."
+                  />
+                }
               >
-                <AvatarScene
-                  gender="female"
-                  glbAssets={glbAssets}
-                  preview={{
-                    ...preview,
-                    outfit: OUTFITS_FEMALE[`outfit${outfitIndex}`],
-                  }}
-                  enableAnimation={isAnimationEnabled}
-                />
-              </group>
-            </Suspense>
+                <group
+                  position={[0.4, 0, 0]}
+                  rotation={[0, ((rotationY - 15) * Math.PI) / 180, 0]}
+                >
+                  <AvatarScene
+                    gender="female"
+                    glbAssets={glbAssets}
+                    preview={{
+                      ...preview,
+                      outfit: OUTFITS_FEMALE[`outfit${outfitIndex}`],
+                    }}
+                  />
+                </group>
+              </Suspense>
 
-            <OrbitControls
-              enablePan={true}
-              enableZoom={true}
-              enableRotate={true}
-              minPolarAngle={Math.PI / 2.5}
-              maxPolarAngle={Math.PI / 1.8}
-              target={[0, 1.2, 0]}
-              makeDefault
-            />
-
-            <Grid
-              args={[20, 20]}
-              cellSize={0.5}
-              cellThickness={1}
-              cellColor="#1e293b"
-              sectionSize={2}
-              sectionThickness={1.5}
-              sectionColor="#3b82f6"
-              fadeDistance={25}
-              fadeStrength={1}
-              followCamera={false}
-              infiniteGrid={true}
-              position={[0, -0.01, 0]}
-            />
-          </Canvas>
+              <OrbitControls
+                enablePan={true}
+                enableZoom={true}
+                enableRotate={true}
+                minPolarAngle={Math.PI / 2.5}
+                maxPolarAngle={Math.PI / 1.8}
+                target={[0, 1.2, 0]}
+                makeDefault
+              />
+            </Canvas>
+          </div>
         </div>
       </div>
     </div>
