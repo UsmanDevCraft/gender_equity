@@ -548,7 +548,7 @@ function AnimatedCombinedScene({
     });
   });
 
-  return <primitive object={combinedScene} scale={1} castShadow />;
+  return <primitive object={combinedScene} scale={1.75} castShadow />;
 }
 
 function AvatarLoader({
@@ -636,7 +636,7 @@ export default function MinimalAvatar({
             <div className="px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full flex items-center gap-2">
               <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
               <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">
-                Live Preview
+                Gender Equity
               </span>
             </div>
           </motion.div>
@@ -645,26 +645,26 @@ export default function MinimalAvatar({
         <MetaDataModal outfitIndex={outfitIndex} />
 
         {/* Camera Controls Panel */}
-        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-30 flex items-center gap-4">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="flex items-center gap-2 p-3 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl"
+            className="flex items-center gap-1 p-2 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl"
           >
             <button
               onClick={() => setRotationY(rotationY - 45)}
               className="p-3 hover:bg-white/10 rounded-2xl transition-all text-white/50 hover:text-white"
               title="Rotate Left"
             >
-              <RotateCcw className="w-5 h-5" />
+              <RotateCcw className="w-4 h-4" />
             </button>
             <button
               onClick={() => setRotationY(rotationY + 45)}
               className="p-3 hover:bg-white/10 rounded-2xl transition-all text-white/50 hover:text-white"
               title="Rotate Right"
             >
-              <RotateCw className="w-5 h-5" />
+              <RotateCw className="w-4 h-4" />
             </button>
 
             <div className="w-px h-6 bg-white/10 mx-1" />
@@ -679,9 +679,9 @@ export default function MinimalAvatar({
               title="Toggle Zoom"
             >
               {isZoomed ? (
-                <Minimize2 className="w-5 h-5" />
+                <Minimize2 className="w-4 h-4" />
               ) : (
-                <Maximize2 className="w-5 h-5" />
+                <Maximize2 className="w-4 h-4" />
               )}
             </button>
 
@@ -693,13 +693,13 @@ export default function MinimalAvatar({
               className="p-3 hover:bg-white/10 rounded-2xl transition-all text-white/50 hover:text-white"
               title="Reset View"
             >
-              <RotateCcw className="w-5 h-5" />
+              <RotateCcw className="w-4 h-4" />
             </button>
           </motion.div>
         </div>
 
         {/* Glassmorphism block encapsulating canvas & arrows */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] h-[80vh] bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[3rem] shadow-2xl z-20 pointer-events-auto overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50vw] h-[70vh] bg-white/5 backdrop-blur-xl border border-white/10 rounded-[3rem] shadow-2xl z-20 pointer-events-auto overflow-hidden">
           {/* Inner Glow offset */}
           <div className="absolute inset-0 rounded-[3rem] shadow-[inset_0_0_100px_rgba(255,255,255,0.05)] pointer-events-none z-30" />
 
@@ -710,13 +710,13 @@ export default function MinimalAvatar({
                 onClick={handlePrevOutfit}
                 className="pointer-events-auto p-4 bg-white/5 backdrop-blur-xl border border-white/20 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:bg-white/10 hover:scale-110 hover:shadow-[0_8px_32px_rgba(255,255,255,0.1)] transition-all text-white/70 hover:text-white"
               >
-                <ChevronLeft className="w-8 h-8" />
+                <ChevronLeft className="w-5 h-5" />
               </button>
               <button
                 onClick={handleNextOutfit}
                 className="pointer-events-auto p-4 bg-white/5 backdrop-blur-xl border border-white/20 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:bg-white/10 hover:scale-110 hover:shadow-[0_8px_32px_rgba(255,255,255,0.1)] transition-all text-white/70 hover:text-white"
               >
-                <ChevronRight className="w-8 h-8" />
+                <ChevronRight className="w-5 h-5" />
               </button>
             </div>
           </div>
@@ -725,7 +725,7 @@ export default function MinimalAvatar({
           <div className="absolute inset-0 z-10">
             <Canvas
               shadows
-              camera={{ position: [0, 1.8, 4.2], fov: 55 }}
+              camera={{ position: [0, 1.9, 4.5], fov: 55 }}
               gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}
             >
               <ambientLight intensity={0.6} />
@@ -749,7 +749,7 @@ export default function MinimalAvatar({
                 }
               >
                 <group
-                  position={[-0.4, 0, 0]}
+                  position={[-0.6, 0, 0]}
                   rotation={[0, ((rotationY + 15) * Math.PI) / 180, 0]}
                 >
                   <AvatarScene
@@ -772,7 +772,7 @@ export default function MinimalAvatar({
                 }
               >
                 <group
-                  position={[0.4, 0, 0]}
+                  position={[0.6, 0, 0]}
                   rotation={[0, ((rotationY - 15) * Math.PI) / 180, 0]}
                 >
                   <AvatarScene
@@ -792,7 +792,7 @@ export default function MinimalAvatar({
                 enableRotate={true}
                 minPolarAngle={Math.PI / 2.5}
                 maxPolarAngle={Math.PI / 1.8}
-                target={[0, 1.2, 0]}
+                target={[0, 1.55, 0]}
                 makeDefault
               />
             </Canvas>
